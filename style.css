@@ -1,0 +1,138 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #1c1c24 0%, #08080c 70%);
+  color: #f2f2f2;
+  font-family: Georgia, 'Times New Roman', serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,0.015) 0px,
+    rgba(255,255,255,0.015) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+  animation: drift 12s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes drift {
+  from { transform: translateX(0) rotate(0deg); }
+  to { transform: translateX(80px) rotate(1deg); }
+}
+
+#game {
+  width: min(760px, 92vw);
+  min-height: 520px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(5, 5, 10, 0.72);
+  box-shadow: 0 0 45px rgba(0,0,0,0.9);
+  position: relative;
+}
+
+#topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #aaa;
+  font-size: 12px;
+}
+
+#timer {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+}
+
+#storyBox {
+  margin-top: 70px;
+}
+
+h1 {
+  font-size: clamp(34px, 5vw, 62px);
+  font-weight: normal;
+  margin: 0 0 28px;
+}
+
+p {
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1.55;
+  min-height: 150px;
+  white-space: pre-line;
+}
+
+#choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 36px;
+}
+
+.choice {
+  background: transparent;
+  color: #f3f3f3;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s, border 0.2s;
+}
+
+.choice:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.55);
+}
+
+#audioHint {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #777;
+}
+
+#restart {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 12px 18px;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.pulse {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
