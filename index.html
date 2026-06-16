@@ -1,26 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Last Door - Prototype</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Before You Think</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <main id="game">
-    <div id="topbar">
-      <div id="sceneCount"></div>
-      <div id="timer">10</div>
-    </div>
-
-    <section id="storyBox">
-      <h1 id="title">The Last Door</h1>
-      <p id="text"></p>
-      <div id="choices"></div>
+<body class="on-home">
+  <main class="game-shell">
+    <section class="media-stage" id="mediaStage" aria-label="Current scene">
+      <video class="scene-video" id="sceneVideo" muted loop playsinline></video>
+      <div class="scene-image" id="sceneImage"></div>
+      <div class="media-placeholder" id="mediaPlaceholder"></div>
+      <div class="vhs-noise"></div>
+      <div class="scanlines"></div>
     </section>
 
-    <div id="audioHint">Use headphones. Make choices before the timer ends.</div>
-    <button id="restart" class="hidden">Restart</button>
+    <section class="home-screen" id="homeScreen" aria-label="Game introduction">
+      <div class="home-copy">
+        <h1>Before<br>you think</h1>
+        <p>You don't remember who you are.</p>
+        <p>You don't remember why you're here.</p>
+        <p>All you know is that something has gone terribly wrong.</p>
+        <p>The answers are hidden somewhere inside this place.</p>
+        <p>When the time comes, choose quickly.</p>
+        <p>Before you think.</p>
+      </div>
+
+      <button class="start-button" id="startButton" type="button">Start</button>
+    </section>
+
+    <aside class="hud">
+      <div class="signal-light" aria-hidden="true"></div>
+      <span id="sceneLabel">PATIENT 4</span>
+      <span id="timer" class="timer" aria-live="polite"></span>
+    </aside>
+
+    <section class="screen-timer" id="screenTimer" aria-live="polite">
+      <span class="screen-timer-label">Decision window</span>
+      <strong id="screenTimerNumber">5</strong>
+      <div class="screen-timer-track">
+        <div class="screen-timer-fill" id="screenTimerFill"></div>
+      </div>
+    </section>
+
+    <section class="story-panel" aria-live="polite">
+      <p id="storyText" class="story-text"></p>
+      <div id="choices" class="choices" aria-label="Choices"></div>
+    </section>
+
+    <!-- TEMP TEST NAVIGATION: delete this block when the story is final. -->
+    <nav class="test-nav" aria-label="Temporary story navigation">
+      <button id="prevSceneButton" type="button" aria-label="Previous scene">&larr;</button>
+      <button id="nextSceneButton" type="button" aria-label="Next scene">&rarr;</button>
+    </nav>
   </main>
 
   <script src="script.js"></script>
