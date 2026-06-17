@@ -9,6 +9,7 @@ let typewriterHandle = null;
 let delayHandle = null;
 let countdownHandle = null;
 let flickerHandle = null;
+let activeTvOverlay = null;
 let acceptingChoice = false;
 
 const storyText = document.getElementById("storyText");
@@ -21,6 +22,7 @@ const screenTimerNumber = document.getElementById("screenTimerNumber");
 const screenTimerFill = document.getElementById("screenTimerFill");
 const sceneVideo = document.getElementById("sceneVideo");
 const sceneImage = document.getElementById("sceneImage");
+const tvOverlayVideo = document.getElementById("tvOverlayVideo");
 const mediaPlaceholder = document.getElementById("mediaPlaceholder");
 const prevSceneButton = document.getElementById("prevSceneButton");
 const nextSceneButton = document.getElementById("nextSceneButton");
@@ -94,10 +96,25 @@ const scenes = {
   },
   after_questioning: {
     title: "Scene 3B / After Questioning",
-    backgroundImage: "",
+    backgroundImage: "Images/img7.png",
     backgroundVideo: "",
+    tvOverlay: {
+      video: "video1.mp4",
+      imageWidth: 1448,
+      imageHeight: 1086,
+      x: 126,
+      y: 82,
+      width: 452,
+      height: 326
+    },
     text: "You continue down the corridor without looking back, but a strange feeling settles in your chest. You cannot explain it, yet you are certain you have made the wrong choice. As you pass a hospital room, the sound of a child laughing echoes from inside. The laughter is warm and carefree, completely out of place in the silence of the facility. Drawn by curiosity, you step inside. A television flickers in the corner of the room. Through the static, a grainy recording begins to play. A car slowly reverses out of a driveway.",
-    autoNext: "cafeteria"
+    timed: false,
+    choices: [
+      {
+        text: "Continue.",
+        next: "cafeteria"
+      }
+    ]
   },
   cafeteria: {
     title: "Scene 4 / The Cafeteria Drawing",
@@ -222,6 +239,7 @@ function showScene(sceneId) {
 
 function updateMedia(scene) {
   stopFlicker();
+  hideTvOverlay();
   sceneVideo.pause();
   sceneVideo.removeAttribute("src");
   sceneVideo.style.display = "none";
@@ -246,6 +264,39 @@ function updateMedia(scene) {
   if (scene.flickerImages) {
     startFlicker(scene.flickerImages);
   }
+
+  if (scene.tvOverlay) {
+    showTvOverlay(scene.tvOverlay);
+  }
+}
+
+function showTvOverlay(overlay) {
+  activeTvOverlay = overlay;
+  tvOverlayVideo.src = overlay.video;
+  tvOverlayVideo.style.display = "block";
+  positionTvOverlay(overlay);
+  tvOverlayVideo.play().catch(() => {});
+}
+
+function hideTvOverlay() {
+  activeTvOverlay = null;
+  tvOverlayVideo.pause();
+  tvOverlayVideo.removeAttribute("src");
+  tvOverlayVideo.style.display = "none";
+}
+
+function positionTvOverlay(overlay) {
+  const stageRect = sceneImage.getBoundingClientRect();
+  const scale = Math.max(stageRect.width / overlay.imageWidth, stageRect.height / overlay.imageHeight);
+  const renderedWidth = overlay.imageWidth * scale;
+  const renderedHeight = overlay.imageHeight * scale;
+  const offsetX = (stageRect.width - renderedWidth) / 2;
+  const offsetY = (stageRect.height - renderedHeight) / 2;
+
+  tvOverlayVideo.style.left = `${offsetX + overlay.x * scale}px`;
+  tvOverlayVideo.style.top = `${offsetY + overlay.y * scale}px`;
+  tvOverlayVideo.style.width = `${overlay.width * scale}px`;
+  tvOverlayVideo.style.height = `${overlay.height * scale}px`;
 }
 
 function startFlicker(images) {
@@ -446,4 +497,9 @@ function startGame() {
 }
 
 startButton.addEventListener("click", startGame);
+window.addEventListener("resize", () => {
+  if (activeTvOverlay) {
+    positionTvOverlay(activeTvOverlay);
+  }
+});
 setupTestNavigation();
