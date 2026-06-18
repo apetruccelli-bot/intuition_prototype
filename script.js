@@ -6,11 +6,13 @@ let empathy = 0;
 let avoidance = 0;
 let currentSceneId = "wake";
 let typewriterHandle = null;
+let typewriterState = null;
 let delayHandle = null;
 let countdownHandle = null;
-let flickerHandle = null;
 let activeTvOverlay = null;
 let acceptingChoice = false;
+let choicesAreInfluenced = false;
+let lastMouseX = window.innerWidth / 2;
 
 const storyText = document.getElementById("storyText");
 const storyPanel = storyText.parentElement;
@@ -22,7 +24,10 @@ const screenTimerNumber = document.getElementById("screenTimerNumber");
 const screenTimerFill = document.getElementById("screenTimerFill");
 const sceneVideo = document.getElementById("sceneVideo");
 const sceneImage = document.getElementById("sceneImage");
+const tvOverlayBackdrop = document.getElementById("tvOverlayBackdrop");
 const tvOverlayVideo = document.getElementById("tvOverlayVideo");
+const tvGlitchVideo = document.getElementById("tvGlitchVideo");
+const tvOverlayVignette = document.getElementById("tvOverlayVignette");
 const mediaPlaceholder = document.getElementById("mediaPlaceholder");
 const prevSceneButton = document.getElementById("prevSceneButton");
 const nextSceneButton = document.getElementById("nextSceneButton");
@@ -35,6 +40,8 @@ const sceneOrder = [
   "after_helping",
   "after_questioning",
   "cafeteria",
+  "cafeteria_drawing",
+  "cafeteria_girl",
   "office",
   "return",
   "ending_acceptance",
@@ -46,12 +53,13 @@ const scenes = {
     title: "Scene 1 / Wake Up",
     backgroundImage: "Images/img2.png",
     backgroundVideo: "",
-    flickerImages: ["Images/img2.png", "Images/img3.png"],
+    sceneImageClass: "hospital-flicker",
     text: "You wake up in a hospital bed. The room is dimly lit, and the fluorescent light above you flickers weakly. There is a locked door in front of you. Around your wrist is a hospital band that reads: PATIENT 4. Beside the bed is a small drawer. Inside the drawer, you find an ID card with your name on it: Carl Darwood. Next to it is an envelope. Written across the front are the words: \"DO NOT OPEN UNTIL YOU REMEMBER.\"",
     choices: [
       {
         text: "Open the envelope.",
         empathy: 1,
+        resultBackgroundImage: "Images/img13.png",
         result: "Inside the envelope is a short note: \"If you are reading this, we are sorry. The procedure failed.\" You do not understand what it means, but the words leave a cold weight in your stomach.",
         next: "corridor"
       },
@@ -89,23 +97,26 @@ const scenes = {
   },
   after_helping: {
     title: "Scene 3A / After Helping",
-    backgroundImage: "",
+    backgroundImage: "Images/img8.png",
     backgroundVideo: "",
+    sceneImageClass: "hospital-flicker",
     text: "You continue down the corridor. The woman's crying fades behind you, but the sound stays inside your head. You do not know who she is, or why she looked at you that way. Still, something about helping her feels strangely familiar, as if your body remembered something your mind could not.",
-    autoNext: "cafeteria"
+    autoNext: "after_questioning"
   },
   after_questioning: {
     title: "Scene 3B / After Questioning",
     backgroundImage: "Images/img7.png",
+    backgroundFit: "contain",
     backgroundVideo: "",
     tvOverlay: {
       video: "video1.mp4",
+      glitchVideo: "glitchoverlay.mp4",
       imageWidth: 1448,
       imageHeight: 1086,
-      x: 126,
-      y: 82,
-      width: 452,
-      height: 326
+      x: 128,
+      y: 86,
+      width: 448,
+      height: 322
     },
     text: "You continue down the corridor without looking back, but a strange feeling settles in your chest. You cannot explain it, yet you are certain you have made the wrong choice. As you pass a hospital room, the sound of a child laughing echoes from inside. The laughter is warm and carefree, completely out of place in the silence of the facility. Drawn by curiosity, you step inside. A television flickers in the corner of the room. Through the static, a grainy recording begins to play. A car slowly reverses out of a driveway.",
     timed: false,
@@ -117,10 +128,25 @@ const scenes = {
     ]
   },
   cafeteria: {
-    title: "Scene 4 / The Cafeteria Drawing",
-    backgroundImage: "",
+    title: "Scene 4A / Cafeteria",
+    backgroundImage: "Images/img10.png",
     backgroundVideo: "",
-    text: "You arrive at what appears to be the cafeteria of the facility. Food trays are still perfectly laid out on the tables, as if everyone left suddenly, without warning. The room smells faintly of dust and something sweet that has gone stale.\n\nOn one table, you find a child's drawing. It shows a little girl holding a balloon, a house, a loving family, and a car in the distance. In the middle of the paper, written in uneven handwriting, are the words: \"Was it a mistake?\"\n\nYou place the drawing back on the table. When you look up, a little girl is standing across the room. She was not there a second ago. She is holding the same red balloon from the drawing. For a moment she simply watches you. Then she points her little finger directly at you.\n\n\"I know you.\"\n\nYour throat tightens. The room suddenly feels smaller. The girl takes a step closer.\n\n\"Have you seen my mommy?\"\n\nYou say nothing. The girl tilts her head.\n\n\"You always forget the important part.\"",
+    text: "You arrive at what appears to be the cafeteria of the facility. Food trays are still perfectly laid out on the tables, as if everyone left suddenly, without warning. The room smells faintly of dust and something sweet that has gone stale.",
+    autoNext: "cafeteria_drawing"
+  },
+  cafeteria_drawing: {
+    title: "Scene 4B / The Drawing",
+    backgroundImage: "Images/img11.png",
+    backgroundVideo: "",
+    text: "On one table, you find a child's drawing. It shows a little girl holding a balloon, a house, a loving family, and a car in the distance. In the middle of the paper, written in uneven handwriting, are the words: \"Was it a mistake?\"",
+    autoNext: "cafeteria_girl"
+  },
+  cafeteria_girl: {
+    title: "Scene 4C / The Girl",
+    backgroundImage: "Images/img12.png",
+    sceneImageClass: "hospital-flicker",
+    backgroundVideo: "",
+    text: "You place the drawing back on the table. When you look up, a little girl is standing across the room. She was not there a second ago. She is holding the same red balloon from the drawing. For a moment she simply watches you. Then she points her little finger directly at you.\n\n\"I know you.\"\n\nYour throat tightens. The room suddenly feels smaller. The girl takes a step closer.\n\n\"Have you seen my mommy?\"\n\nYou say nothing. The girl tilts her head.\n\n\"You always forget the important part.\"",
     choices: [
       {
         text: "How do you know me?",
@@ -218,6 +244,7 @@ function showScene(sceneId) {
   sceneLabel.textContent = scene.title;
   timer.textContent = "";
   hideScreenTimer();
+  clearChoiceInfluence();
   choicesBox.innerHTML = "";
   storyText.textContent = "";
   storyPanel.scrollTop = 0;
@@ -238,13 +265,13 @@ function showScene(sceneId) {
 }
 
 function updateMedia(scene) {
-  stopFlicker();
   hideTvOverlay();
   sceneVideo.pause();
   sceneVideo.removeAttribute("src");
   sceneVideo.style.display = "none";
   sceneImage.style.display = "none";
   sceneImage.style.backgroundImage = "";
+  sceneImage.className = "scene-image";
   mediaPlaceholder.style.display = "block";
 
   if (scene.backgroundVideo) {
@@ -257,23 +284,33 @@ function updateMedia(scene) {
 
   if (scene.backgroundImage) {
     sceneImage.style.backgroundImage = `url("${scene.backgroundImage}")`;
+    sceneImage.style.backgroundSize = scene.backgroundFit || "cover";
+    if (scene.sceneImageClass) {
+      sceneImage.classList.add(scene.sceneImageClass);
+    }
     sceneImage.style.display = "block";
     mediaPlaceholder.style.display = "none";
   }
 
-  if (scene.flickerImages) {
-    startFlicker(scene.flickerImages);
-  }
-
   if (scene.tvOverlay) {
-    showTvOverlay(scene.tvOverlay);
+    showTvOverlay({
+      ...scene.tvOverlay,
+      fit: scene.backgroundFit || "cover"
+    });
   }
 }
 
 function showTvOverlay(overlay) {
   activeTvOverlay = overlay;
   tvOverlayVideo.src = overlay.video;
+  tvOverlayBackdrop.style.display = "block";
   tvOverlayVideo.style.display = "block";
+  tvOverlayVignette.style.display = "block";
+  if (overlay.glitchVideo) {
+    tvGlitchVideo.src = overlay.glitchVideo;
+    tvGlitchVideo.style.display = "block";
+    tvGlitchVideo.play().catch(() => {});
+  }
   positionTvOverlay(overlay);
   tvOverlayVideo.play().catch(() => {});
 }
@@ -281,13 +318,20 @@ function showTvOverlay(overlay) {
 function hideTvOverlay() {
   activeTvOverlay = null;
   tvOverlayVideo.pause();
+  tvGlitchVideo.pause();
   tvOverlayVideo.removeAttribute("src");
+  tvGlitchVideo.removeAttribute("src");
+  tvOverlayBackdrop.style.display = "none";
   tvOverlayVideo.style.display = "none";
+  tvGlitchVideo.style.display = "none";
+  tvOverlayVignette.style.display = "none";
 }
 
 function positionTvOverlay(overlay) {
   const stageRect = sceneImage.getBoundingClientRect();
-  const scale = Math.max(stageRect.width / overlay.imageWidth, stageRect.height / overlay.imageHeight);
+  const scale = overlay.fit === "contain"
+    ? Math.min(stageRect.width / overlay.imageWidth, stageRect.height / overlay.imageHeight)
+    : Math.max(stageRect.width / overlay.imageWidth, stageRect.height / overlay.imageHeight);
   const renderedWidth = overlay.imageWidth * scale;
   const renderedHeight = overlay.imageHeight * scale;
   const offsetX = (stageRect.width - renderedWidth) / 2;
@@ -297,57 +341,104 @@ function positionTvOverlay(overlay) {
   tvOverlayVideo.style.top = `${offsetY + overlay.y * scale}px`;
   tvOverlayVideo.style.width = `${overlay.width * scale}px`;
   tvOverlayVideo.style.height = `${overlay.height * scale}px`;
-}
-
-function startFlicker(images) {
-  let imageIndex = 0;
-
-  function showNextFlickerFrame() {
-    imageIndex = imageIndex === 0 ? 1 : 0;
-    sceneImage.style.backgroundImage = `url("${images[imageIndex]}")`;
-
-    const darkFrameDuration = Math.random() < 0.45
-      ? randomBetween(420, 820)
-      : randomBetween(120, 240);
-
-    const nextDelay = imageIndex === 0
-      ? randomBetween(620, 1450)
-      : darkFrameDuration;
-
-    flickerHandle = setTimeout(showNextFlickerFrame, nextDelay);
-  }
-
-  sceneImage.style.backgroundImage = `url("${images[0]}")`;
-  sceneImage.style.display = "block";
-  mediaPlaceholder.style.display = "none";
-  flickerHandle = setTimeout(showNextFlickerFrame, randomBetween(420, 900));
-}
-
-function stopFlicker() {
-  clearTimeout(flickerHandle);
-  flickerHandle = null;
-}
-
-function randomBetween(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  tvGlitchVideo.style.left = `${offsetX + overlay.x * scale}px`;
+  tvGlitchVideo.style.top = `${offsetY + overlay.y * scale}px`;
+  tvGlitchVideo.style.width = `${overlay.width * scale}px`;
+  tvGlitchVideo.style.height = `${overlay.height * scale}px`;
+  tvOverlayVignette.style.left = `${offsetX + overlay.x * scale}px`;
+  tvOverlayVignette.style.top = `${offsetY + overlay.y * scale}px`;
+  tvOverlayVignette.style.width = `${overlay.width * scale}px`;
+  tvOverlayVignette.style.height = `${overlay.height * scale}px`;
+  tvOverlayBackdrop.style.left = `${offsetX + overlay.x * scale}px`;
+  tvOverlayBackdrop.style.top = `${offsetY + overlay.y * scale}px`;
+  tvOverlayBackdrop.style.width = `${overlay.width * scale}px`;
+  tvOverlayBackdrop.style.height = `${overlay.height * scale}px`;
 }
 
 function typeText(text, onComplete) {
-  let index = 0;
+  clearTimeout(typewriterHandle);
+  typewriterState = {
+    text,
+    index: 0,
+    onComplete
+  };
 
-  function addNextCharacter() {
-    storyText.textContent = text.slice(0, index);
-    storyPanel.scrollTop = storyPanel.scrollHeight;
-    index += 1;
+  addNextTypewriterCharacter();
+}
 
-    if (index <= text.length) {
-      typewriterHandle = setTimeout(addNextCharacter, typewriterSpeed);
-    } else {
-      onComplete();
+function addNextTypewriterCharacter() {
+  if (!typewriterState) {
+    return;
+  }
+
+  const { text } = typewriterState;
+  storyText.textContent = text.slice(0, typewriterState.index);
+  storyPanel.scrollTop = storyPanel.scrollHeight;
+  typewriterState.index += 1;
+
+  if (typewriterState.index <= text.length) {
+    typewriterHandle = setTimeout(addNextTypewriterCharacter, typewriterSpeed);
+    return;
+  }
+
+  finishTypewriter();
+}
+
+function finishTypewriter() {
+  if (!typewriterState) {
+    return;
+  }
+
+  const onComplete = typewriterState.onComplete;
+  typewriterState = null;
+  onComplete();
+}
+
+function completeCurrentSentence() {
+  if (!typewriterState) {
+    return false;
+  }
+
+  clearTimeout(typewriterHandle);
+
+  const { text } = typewriterState;
+  const visibleIndex = Math.max(0, typewriterState.index - 1);
+  const sentenceEnd = findSentenceEnd(text, visibleIndex);
+  storyText.textContent = text.slice(0, sentenceEnd);
+  storyPanel.scrollTop = storyPanel.scrollHeight;
+  typewriterState.index = sentenceEnd + 1;
+
+  if (sentenceEnd >= text.length) {
+    finishTypewriter();
+    return true;
+  }
+
+  typewriterHandle = setTimeout(addNextTypewriterCharacter, typewriterSpeed);
+  return true;
+}
+
+function findSentenceEnd(text, startIndex) {
+  for (let index = startIndex; index < text.length; index += 1) {
+    if (isSentencePunctuation(text[index])) {
+      let endIndex = index + 1;
+
+      while (endIndex < text.length && isClosingSentenceCharacter(text[endIndex])) {
+        endIndex += 1;
+      }
+
+      return endIndex;
     }
   }
 
-  addNextCharacter();
+  return text.length;
+}
+
+function isSentencePunctuation(character) {
+  return character === "." || character === "!" || character === "?";
+}
+
+function isClosingSentenceCharacter(character) {
+  return character === "\"" || character === "'" || character === ")" || character === "]" || character === "}";
 }
 
 function showChoices(scene) {
@@ -363,6 +454,9 @@ function showChoices(scene) {
   });
 
   if (scene.timed !== false) {
+    choicesAreInfluenced = true;
+    choicesBox.classList.add("influence-active");
+    updateChoiceInfluence(lastMouseX);
     startChoiceTimer(scene);
   }
 }
@@ -377,9 +471,10 @@ function startChoiceTimer(scene) {
     updateTimers(remaining);
 
     if (remaining <= 0) {
-      const defaultChoice = findAvoidanceChoice(scene);
       const buttons = Array.from(choicesBox.querySelectorAll("button"));
-      const defaultButton = buttons[scene.choices.indexOf(defaultChoice)];
+      const selectedIndex = getMouseInfluencedChoiceIndex(scene);
+      const defaultChoice = scene.choices[selectedIndex];
+      const defaultButton = buttons[selectedIndex];
       if (defaultButton) {
         defaultButton.classList.add("auto-selected");
       }
@@ -388,8 +483,12 @@ function startChoiceTimer(scene) {
   }, 1000);
 }
 
-function findAvoidanceChoice(scene) {
-  return scene.choices.find((choice) => choice.avoidant) || scene.choices[scene.choices.length - 1];
+function getMouseInfluencedChoiceIndex(scene) {
+  if (scene.choices.length <= 1) {
+    return 0;
+  }
+
+  return lastMouseX < window.innerWidth / 2 ? 0 : 1;
 }
 
 function chooseOption(choice, button) {
@@ -398,10 +497,10 @@ function chooseOption(choice, button) {
   }
 
   acceptingChoice = true;
-  stopFlicker();
   clearInterval(countdownHandle);
   timer.textContent = "";
   hideScreenTimer();
+  clearChoiceInfluence();
   disableChoiceButtons();
 
   if (button) {
@@ -418,12 +517,13 @@ function chooseOption(choice, button) {
     return;
   }
 
-  if (choice.result) {
-    if (choice.resultBackgroundImage) {
-      updateMedia({ backgroundImage: choice.resultBackgroundImage });
-    }
+    if (choice.result) {
+      if (choice.resultBackgroundImage) {
+        updateMedia({ backgroundImage: choice.resultBackgroundImage, sceneImageClass: choice.resultImageClass });
+      }
 
-    choicesBox.innerHTML = "";
+      choicesBox.innerHTML = "";
+    clearChoiceInfluence();
     storyText.classList.remove("complete");
     storyPanel.scrollTop = 0;
     typeText(choice.result, () => {
@@ -443,10 +543,27 @@ function disableChoiceButtons() {
 
 function clearTimers() {
   clearTimeout(typewriterHandle);
+  typewriterState = null;
   clearTimeout(delayHandle);
   clearInterval(countdownHandle);
-  stopFlicker();
   hideScreenTimer();
+  clearChoiceInfluence();
+}
+
+function updateChoiceInfluence(pointerX) {
+  lastMouseX = pointerX;
+
+  if (!choicesAreInfluenced) {
+    return;
+  }
+
+  choicesBox.classList.toggle("influence-left", pointerX < window.innerWidth / 2);
+  choicesBox.classList.toggle("influence-right", pointerX >= window.innerWidth / 2);
+}
+
+function clearChoiceInfluence() {
+  choicesAreInfluenced = false;
+  choicesBox.classList.remove("influence-active", "influence-left", "influence-right");
 }
 
 function updateTimers(remaining) {
@@ -497,9 +614,23 @@ function startGame() {
 }
 
 startButton.addEventListener("click", startGame);
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space" || event.repeat) {
+    return;
+  }
+
+  if (completeCurrentSentence()) {
+    event.preventDefault();
+  }
+});
+document.addEventListener("pointermove", (event) => {
+  updateChoiceInfluence(event.clientX);
+});
 window.addEventListener("resize", () => {
   if (activeTvOverlay) {
     positionTvOverlay(activeTvOverlay);
   }
+
+  updateChoiceInfluence(Math.min(lastMouseX, window.innerWidth));
 });
 setupTestNavigation();
