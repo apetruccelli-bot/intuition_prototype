@@ -11,6 +11,7 @@
     <section class="media-stage" id="mediaStage" aria-label="Current scene">
       <video class="scene-video" id="sceneVideo" muted loop playsinline></video>
       <div class="scene-image" id="sceneImage"></div>
+      <div class="scene-image scene-image-crossfade" id="sceneImageCrossfade"></div>
       <div class="tv-overlay-backdrop" id="tvOverlayBackdrop"></div>
       <video class="tv-overlay-video" id="tvOverlayVideo" muted loop playsinline></video>
       <video class="tv-glitch-video" id="tvGlitchVideo" muted loop playsinline></video>
@@ -18,6 +19,7 @@
       <div class="media-placeholder" id="mediaPlaceholder"></div>
       <div class="vhs-noise"></div>
       <div class="scanlines"></div>
+      <button class="vhs-play-button" id="vhsPlayButton" type="button" hidden>Play</button>
     </section>
 
     <section class="home-screen" id="homeScreen" aria-label="Game introduction">
@@ -51,6 +53,16 @@
     <section class="story-panel" aria-live="polite">
       <p id="storyText" class="story-text"></p>
       <div id="choices" class="choices" aria-label="Choices"></div>
+    </section>
+
+    <section class="ending-achieved" id="endingAchieved" aria-live="polite" hidden>
+      <div class="ending-achieved-card">
+        <h2>Ending Achieved: You let go.</h2>
+        <p>You stopped running from what was already there.</p>
+        <p>You listened. You remembered. You understood.</p>
+        <p>Thank you for playing.</p>
+        <button class="ending-home-button" id="endingHomeButton" type="button">Home</button>
+      </div>
     </section>
 
     <!-- TEMP TEST NAVIGATION: delete this block when the story is final. -->
