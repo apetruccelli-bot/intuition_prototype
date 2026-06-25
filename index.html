@@ -23,6 +23,8 @@
     </section>
 
     <section class="home-screen" id="homeScreen" aria-label="Game introduction">
+      <button class="about-link" id="aboutButton" type="button">About</button>
+
       <div class="home-copy">
         <h1>Before<br>you think</h1>
         <p>You don't remember who you are.</p>
@@ -35,12 +37,6 @@
 
       <button class="start-button" id="startButton" type="button">Start</button>
     </section>
-
-    <aside class="hud">
-      <div class="signal-light" aria-hidden="true"></div>
-      <span id="sceneLabel">PATIENT 4</span>
-      <span id="timer" class="timer" aria-live="polite"></span>
-    </aside>
 
     <section class="screen-timer" id="screenTimer" aria-live="polite">
       <span class="screen-timer-label">Decision window</span>
@@ -65,11 +61,26 @@
       </div>
     </section>
 
-    <!-- TEMP TEST NAVIGATION: delete this block when the story is final. -->
-    <nav class="test-nav" aria-label="Temporary story navigation">
-      <button id="prevSceneButton" type="button" aria-label="Previous scene">&larr;</button>
-      <button id="nextSceneButton" type="button" aria-label="Next scene">&rarr;</button>
-    </nav>
+    <section class="about-overlay" id="aboutOverlay" aria-label="About the project" hidden>
+      <article class="about-card">
+        <button class="about-close" id="aboutCloseButton" type="button" aria-label="Close about page">Close</button>
+        <h2>About the Project</h2>
+
+        <h3>What is the Project?</h3>
+        <p>This project is an interactive psychological horror game inspired by the themes of The Sixth Sense. It explores fear, memory, grief, and the moment when someone finally understands a truth that has been hidden in front of them all along.</p>
+        <p>The player follows a man who wakes inside a strange hospital room and begins exploring unsettling spaces filled with clues, memories, and symbolic encounters. As the player progresses, the hospital changes depending on what they notice, collect, and understand.</p>
+
+        <h3>The Idea Behind It</h3>
+        <p>The idea behind this project is to create a horror experience that focuses more on emotion, atmosphere, and story than jump scares.</p>
+        <p>Like The Sixth Sense, the game is built around the idea that fear can turn into understanding once the truth is revealed. What seems frightening at first slowly becomes meaningful.</p>
+
+        <h3>How to Play</h3>
+        <p>The game is simple. At each stage, you'll choose between two options and continue your journey based on the decisions you make. Pay attention--every choice has consequences, and not everything is as it first appears. Which option is better? Maybe you'll find out... or maybe there was never a correct choice to begin with.</p>
+        <p>Good luck.</p>
+        <p>- Anisia Petruccelli</p>
+      </article>
+    </section>
+
   </main>
 
   <script src="script.js"></script>

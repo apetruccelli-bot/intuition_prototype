@@ -259,22 +259,6 @@ button {
   mix-blend-mode: screen;
 }
 
-.hud {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--color-muted);
-  font-family: var(--font-home-title);
-  font-size: clamp(0.76rem, 1.5vw, 0.95rem);
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
 .signal-light {
   width: 9px;
   height: 9px;
@@ -282,14 +266,6 @@ button {
   background: var(--color-danger);
   box-shadow: 0 0 12px var(--color-danger);
   animation: pulse 1.8s infinite;
-}
-
-.timer {
-  margin-left: auto;
-  min-width: 10ch;
-  text-align: right;
-  color: var(--color-accent);
-  font-family: var(--font-home-title);
 }
 
 .screen-timer {
@@ -435,6 +411,28 @@ body.on-home .game-shell::after {
   white-space: nowrap;
 }
 
+.about-link {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 11;
+  padding: 0;
+  color: var(--color-home);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-home-body);
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.25;
+}
+
+.about-link:hover,
+.about-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  outline: none;
+}
+
 .start-button {
   position: fixed;
   left: 67%;
@@ -471,10 +469,12 @@ body:not(.on-home) .home-screen {
   display: none;
 }
 
-body.on-home .hud,
+body:not(.on-home) .about-link {
+  display: none;
+}
+
 body.on-home .screen-timer,
-body.on-home .story-panel,
-body.on-home .test-nav {
+body.on-home .story-panel {
   display: none;
 }
 
@@ -600,6 +600,82 @@ body.on-home .test-nav {
   transform: translateY(-2px);
 }
 
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 5vw, 64px);
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.026) 0 1px, transparent 1px 5px),
+    rgba(0, 0, 0, 0.72);
+}
+
+.about-overlay[hidden] {
+  display: none;
+}
+
+.about-card {
+  position: relative;
+  width: min(820px, 92vw);
+  max-height: min(78vh, 720px);
+  padding: clamp(22px, 4vw, 38px);
+  overflow-y: auto;
+  color: var(--color-text);
+  background: rgba(4, 6, 5, 0.9);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.58), inset 0 0 38px rgba(181, 143, 50, 0.045);
+  scrollbar-color: rgba(181, 143, 50, 0.7) rgba(0, 0, 0, 0.25);
+}
+
+.about-card h2,
+.about-card h3 {
+  color: var(--color-home);
+  font-family: var(--font-home-title);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.about-card h2 {
+  margin: 0 0 24px;
+  padding-right: 88px;
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+}
+
+.about-card h3 {
+  margin: 26px 0 12px;
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+}
+
+.about-card p {
+  margin: 0 0 15px;
+  font-family: var(--font-home-body);
+  font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+  line-height: 1.7;
+}
+
+.about-close {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  padding: 0;
+  color: var(--color-home);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-home-body);
+  font-size: clamp(13px, 1.05vw, 16px);
+}
+
+.about-close:hover,
+.about-close:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  outline: none;
+}
+
 .choices {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -648,34 +724,6 @@ body.on-home .test-nav {
   border-color: var(--color-home);
   color: #080704;
   background: var(--color-home);
-}
-
-/* TEMP TEST NAVIGATION: delete this section when the story is final. */
-.test-nav {
-  position: fixed;
-  right: clamp(14px, 4vw, 52px);
-  top: 68px;
-  z-index: 6;
-  display: flex;
-  gap: 8px;
-}
-
-.test-nav button {
-  width: 42px;
-  height: 42px;
-  color: var(--color-home);
-  background: rgba(5, 10, 9, 0.58);
-  border: 1px solid rgba(181, 143, 50, 0.62);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.test-nav button:hover,
-.test-nav button:focus-visible {
-  color: #080704;
-  background: var(--color-home);
-  border-color: var(--color-home);
-  outline: none;
 }
 
 @keyframes cursorBlink {
@@ -838,12 +886,6 @@ body.on-home .test-nav {
 }
 
 @media (max-width: 720px) {
-  .hud {
-    top: 12px;
-    left: 14px;
-    right: 14px;
-  }
-
   .story-panel {
     max-height: 58vh;
   }
@@ -884,7 +926,4 @@ body.on-home .test-nav {
     grid-template-columns: 1fr;
   }
 
-  .test-nav {
-    top: 92px;
-  }
 }

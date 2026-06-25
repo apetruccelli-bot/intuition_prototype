@@ -26,8 +26,6 @@ let lastMouseX = window.innerWidth / 2;
 const storyText = document.getElementById("storyText");
 const storyPanel = storyText.parentElement;
 const choicesBox = document.getElementById("choices");
-const sceneLabel = document.getElementById("sceneLabel");
-const timer = document.getElementById("timer");
 const screenTimer = document.getElementById("screenTimer");
 const screenTimerNumber = document.getElementById("screenTimerNumber");
 const screenTimerFill = document.getElementById("screenTimerFill");
@@ -42,25 +40,10 @@ const mediaPlaceholder = document.getElementById("mediaPlaceholder");
 const vhsPlayButton = document.getElementById("vhsPlayButton");
 const endingAchieved = document.getElementById("endingAchieved");
 const endingHomeButton = document.getElementById("endingHomeButton");
-const prevSceneButton = document.getElementById("prevSceneButton");
-const nextSceneButton = document.getElementById("nextSceneButton");
+const aboutButton = document.getElementById("aboutButton");
+const aboutOverlay = document.getElementById("aboutOverlay");
+const aboutCloseButton = document.getElementById("aboutCloseButton");
 const startButton = document.getElementById("startButton");
-
-// TEMP TEST NAVIGATION: delete sceneOrder and setupTestNavigation when the story is final.
-const sceneOrder = [
-  "wake",
-  "corridor",
-  "after_helping",
-  "after_questioning",
-  "cafeteria",
-  "cafeteria_drawing",
-  "cafeteria_girl",
-  "office",
-  "return",
-  "ending_acceptance",
-  "ending_loop",
-  "ending_loop_room"
-];
 
 const scenes = {
   wake: {
@@ -370,6 +353,11 @@ const scenes = {
           images: ["Images/img42.png"],
           classes: ["ending-loop-flash ending-loop-blur"],
           durations: [130, 420]
+        },
+        {
+          images: ["Images/img38.png"],
+          classes: ["ending-loop-intro"],
+          durations: [1800, 2600]
         }
       ]
     },
@@ -1373,14 +1361,32 @@ function startGame() {
   empathy = 0;
   avoidance = 0;
   endingAchieved.hidden = true;
+  closeAbout();
   document.body.classList.remove("on-home");
   showScene("wake");
 }
 
+function openAbout() {
+  aboutOverlay.hidden = false;
+  aboutCloseButton.focus();
+}
+
+function closeAbout() {
+  aboutOverlay.hidden = true;
+}
+
 startButton.addEventListener("click", startGame);
 endingHomeButton.addEventListener("click", returnToHomeScreen);
+aboutButton.addEventListener("click", openAbout);
+aboutCloseButton.addEventListener("click", closeAbout);
 document.addEventListener("pointerdown", unlockAudio, { once: true });
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !aboutOverlay.hidden) {
+    closeAbout();
+    aboutButton.focus();
+    return;
+  }
+
   if (event.code !== "Space" || event.repeat) {
     return;
   }
