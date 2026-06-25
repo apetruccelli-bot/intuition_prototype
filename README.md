@@ -1,10 +1,10 @@
 # Before You Think
 
-**Before You Think** is a browser-based interactive psychological horror game built with HTML, CSS, and vanilla JavaScript. The project combines a branching text narrative with cinematic backgrounds, timed choices, atmospheric sound, VHS-style visuals, and hidden psychological scoring to create a story-driven horror experience about memory, grief, guilt, and intuition.
+**Before You Think** is a browser-based interactive psychological horror game built with HTML, CSS, and JavaScript. The project combines a branching text narrative with cinematic backgrounds, timed choices, atmospheric sound, VHS-style visuals, and hidden psychological scoring to create a story-driven horror experience about memory, grief, guilt, and intuition.
 
 ## Project Overview
 
-This project is an interactive psychological horror text-based game inspired by *The Sixth Sense*. Rather than focusing on traditional horror mechanics such as combat, enemies, or jump scares, the game focuses on atmosphere, player choice, intuition, and psychological storytelling. The experience asks the player to read carefully, react quickly, and slowly uncover the emotional truth hidden inside the story.
+This project is an interactive psychological horror text-based game inspired by _The Sixth Sense_. Rather than focusing on traditional horror mechanics such as combat, enemies, or jump scares, the game focuses on atmosphere, player choice, intuition, and psychological storytelling. The experience asks the player to read carefully, react quickly, and slowly uncover the emotional truth hidden inside the story.
 
 ## Concept
 
@@ -27,6 +27,7 @@ The player's decisions influence the ending through hidden psychological values.
 - Flashback image sequences
 - Mouse-influenced timed choices
 - Scene-specific audio layers
+- Temporary navigation arrows for testing story flow
 
 ## How to Play
 
@@ -51,6 +52,7 @@ Once the game starts:
 - **Spacebar:** Complete the current sentence during the typewriter effect.
 - **Scroll:** Scroll the story box if needed.
 - **Buttons:** Start the game, open the About page, play VHS sequences, and return home from the ending screen.
+- **Arrow keys:** Temporary testing controls for moving through scenes during development.
 
 ## Project Structure
 
@@ -158,6 +160,7 @@ Possible future additions include:
 - Mobile optimisation
 - Volume controls
 - Subtitle options for audio sequences
+- A final polished build without testing navigation arrows
 
 ## Credits
 
@@ -165,7 +168,7 @@ Possible future additions include:
 Anisia Petruccelli
 
 **Inspired by:**  
-*The Sixth Sense* (1999)
+ Backrooms aesthetic
 
 ## License
 
