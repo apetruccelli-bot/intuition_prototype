@@ -382,8 +382,6 @@ function showScene(sceneId) {
   acceptingChoice = false;
 
   const scene = scenes[sceneId];
-  sceneLabel.textContent = scene.title;
-  timer.textContent = "";
   hideScreenTimer();
   clearChoiceInfluence();
   choicesBox.innerHTML = "";
@@ -473,7 +471,6 @@ function runEndAction(action) {
   sequenceToken += 1;
   storyPanel.classList.add("is-hidden");
   choicesBox.innerHTML = "";
-  timer.textContent = "";
   hideScreenTimer();
   stopSceneSounds();
   setSequenceColorFlash("#fff");
@@ -577,7 +574,6 @@ function showAchievedEnding() {
   sequenceToken += 1;
   storyPanel.classList.add("is-hidden");
   choicesBox.innerHTML = "";
-  timer.textContent = "";
   hideScreenTimer();
   endingAchieved.hidden = false;
   endingHomeButton.focus();
@@ -593,8 +589,6 @@ function returnToHomeScreen() {
   storyText.textContent = "";
   storyText.classList.remove("complete");
   storyPanel.classList.remove("is-hidden");
-  sceneLabel.textContent = "PATIENT 4";
-  timer.textContent = "";
   endingAchieved.hidden = true;
   updateMedia({});
   document.body.classList.add("on-home");
@@ -1221,7 +1215,6 @@ function chooseOption(choice, button) {
   clearInterval(countdownHandle);
   clearTimeout(sequenceHandle);
   sequenceToken += 1;
-  timer.textContent = "";
   hideScreenTimer();
   clearChoiceInfluence();
   disableChoiceButtons();
@@ -1317,7 +1310,6 @@ function updateTimers(remaining) {
   const visibleTime = Math.max(remaining, 0);
   const progressPercent = (visibleTime / choiceTimerSeconds) * 100;
 
-  timer.textContent = `Choose: ${visibleTime}`;
   screenTimerNumber.textContent = visibleTime;
   screenTimerFill.style.width = `${progressPercent}%`;
 }
@@ -1326,33 +1318,6 @@ function hideScreenTimer() {
   screenTimer.classList.remove("active");
   screenTimerNumber.textContent = choiceTimerSeconds;
   screenTimerFill.style.width = "100%";
-}
-
-// TEMP TEST NAVIGATION: delete this function and the call below when the story is final.
-function setupTestNavigation() {
-  function jumpBy(direction) {
-    unlockAudio();
-    stopSceneSounds();
-    const currentIndex = sceneOrder.indexOf(currentSceneId);
-    const nextIndex = Math.min(Math.max(currentIndex + direction, 0), sceneOrder.length - 1);
-    empathy = 0;
-    avoidance = 0;
-    document.body.classList.remove("on-home");
-    showScene(sceneOrder[nextIndex]);
-  }
-
-  prevSceneButton.addEventListener("click", () => jumpBy(-1));
-  nextSceneButton.addEventListener("click", () => jumpBy(1));
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") {
-      jumpBy(-1);
-    }
-
-    if (event.key === "ArrowRight") {
-      jumpBy(1);
-    }
-  });
 }
 
 function startGame() {
@@ -1405,4 +1370,3 @@ window.addEventListener("resize", () => {
 
   updateChoiceInfluence(Math.min(lastMouseX, window.innerWidth));
 });
-setupTestNavigation();
